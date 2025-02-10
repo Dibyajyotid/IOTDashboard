@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>IOT Dashboard</title>
+        <style>
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 20px;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 1000px;
+                margin: auto;
+                padding: 20px;
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            h2 {
+                text-align: center;
+                margin-bottom: 20px;
+
+            }
+
+            .data {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 10px;
+                font-size: 18px;
+                flex-wrap: wrap;
+            }
+
+            .data span {
+                flex: 1 1 30%;
+                margin: 10px;
+            }
+
+            .alert {
+                background-color: #f8d7da;
+                color: #721c24;
+                padding: 10px;
+                border-radius: 5px;
+                margin-bottom: 20px;
+            }
+
+            .chart-container {
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
+            }
+
+            canvas {
+                width: 100%;
+                height: 200px;
+                margin-top: 30px;
+                margin-bottom: 20px;
+                border: 1px solid #ddd;
+            }
+
+            @media (max-width: 600px) {
+                .data {
+                    flex-direction: column;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <h2>Real-Time IoT Dashboard</h2>
+            <div id="alert" class="alert" style="display:none;"></div>
+
+            <div class="data">
+                <span><strong>Temperature:</strong> <span id="temperature">Loading...</span>°C</span>
+                <span><strong>Humidity:</strong> <span id="humidity">Loading...</span>%</span>
+                <span><strong>Pressure:</strong> <span id="pressure">Loading...</span>hPa</span>
+                <span><strong>CO2:</strong> <span id="co2">Loading...</span>ppm</span>
+                <span><strong>Motion:</strong> <span id="motion">Loading...</span></span>
+            </div>
+
+
+            <div class="chart-container">
+                <canvas id="temperatureChart"></canvas>
+                <canvas id="co2Chart"></canvas>
+                <canvas id="motionChart"></canvas>
+
+            </div>
+        </div>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <script>
+            const socket = io();
+        
+            const tempCtx = document.getElementById("temperatureChart").getContext("2d");
+            const co2Ctx = document.getElementById("co2Chart").getContext("2d");
+            const motionCtx = document.getElementById("motionChart").getContext("2d");
+        
+            const temperatureData = {
+                labels: [],
+                datasets: [{
+                    label: 'Temperature(°C)',
+                    data: [],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    fill: false
+                }]
+            };
+        
+            const co2Data = {
+                labels: [],
+                datasets: [{
+                    label: 'CO2(ppm)',
+                    data: [],
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    fill: false
+                }]
+            };
+        
+            const motionData = {
+                labels: [],
+                datasets: [{
+                    label: 'Motion Detection',
+                    data: [],
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    fill: false
+                }]
+            };
+        
+            const config = {
+                type: 'line',
+                options: {
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom'
+                        }
+                    }
+                }
+            };
+        
+            const tempChart = new Chart(tempCtx, {...config, data: temperatureData});
+            console.log(tempChart)
+            const co2Chart = new Chart(co2Ctx, {...config, data: co2Data});
+            console.log(co2Chart)
+            const motionChart = new Chart(motionCtx, {...config, data: motionData});
+            console.log(motionChart)
+        
+            socket.on("sensorData", (data) => {
+                // Update dashboard with the latest sensor data
+                document.getElementById("temperature").textContent = data.temperature;
+                document.getElementById("humidity").textContent = data.humidity;
+                document.getElementById("pressure").textContent = data.pressure;
+                document.getElementById("co2").textContent = data.co2;
+                document.getElementById("motion").textContent = data.motion ? "Detected" : "Not Detected";
+        
+                // Update charts with real-time data
+                temperatureData.labels.push(new Date());
+                temperatureData.datasets[0].data.push(data.temperature);
+                tempChart.update();
+        
+                co2Data.labels.push(new Date());
+                co2Data.datasets[0].data.push(data.co2);
+                co2Chart.update();
+        
+                motionData.labels.push(new Date());
+                motionData.datasets[0].data.push(data.motion);
+                motionChart.update();
+            });
+        
+            socket.on("alert", (message) => {
+                const alertDiv = document.getElementById("alert");
+                alertDiv.style.display = "block";
+                alertDiv.textContent = message;
+        
+                // Hide alert after 5 seconds
+                setTimeout(() => {
+                    alertDiv.style.display = "none";
+                }, 5000);
+            });
+        </script>
+        
+    </body>
+
+</html>
