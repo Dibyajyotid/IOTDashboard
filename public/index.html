@@ -1,192 +1,1770 @@
-<!DOCTYPE html>
-    <html lang="en">
+<!-- <!DOCTYPE html>
+<html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>IOT Dashboard</title>
-        <style>
-            body {
-                font-family: Arial, Helvetica, sans-serif;
-                background-color: #f4f4f4;
-                margin: 0;
-                padding: 20px;
-            }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --danger: #f72585;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --white: #ffffff;
+        }
 
-            .container {
-                width: 100%;
-                max-width: 1000px;
-                margin: auto;
-                padding: 20px;
-                background-color: #fff;
-                border-radius: 8px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-            h2 {
-                text-align: center;
-                margin-bottom: 20px;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
 
-            }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
 
-            .data {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 10px;
-                font-size: 18px;
-                flex-wrap: wrap;
-            }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
 
-            .data span {
-                flex: 1 1 30%;
-                margin: 10px;
-            }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-            .alert {
-                background-color: #f8d7da;
-                color: #721c24;
-                padding: 10px;
-                border-radius: 5px;
-                margin-bottom: 20px;
-            }
+        .logo i {
+            font-size: 28px;
+            color: var(--primary);
+        }
 
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .last-updated {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            background-color: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffeeba;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeIn 0.3s ease-in-out;
+            display: none;
+        }
+
+        .alert i {
+            font-size: 20px;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left-color: #f5c6cb;
+        }
+
+        .sensor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .sensor-card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .sensor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .sensor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .sensor-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .temp-icon {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .humidity-icon {
+            background-color: rgba(13, 110, 253, 0.1);
+            color: #0d6efd;
+        }
+
+        .pressure-icon {
+            background-color: rgba(25, 135, 84, 0.1);
+            color: #198754;
+        }
+
+        .co2-icon {
+            background-color: rgba(111, 66, 193, 0.1);
+            color: #6f42c1;
+        }
+
+        .motion-icon {
+            background-color: rgba(253, 126, 20, 0.1);
+            color: #fd7e14;
+        }
+
+        .sensor-title {
+            font-size: 14px;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .sensor-value {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 5px 0;
+        }
+
+        .sensor-unit {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        .sensor-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: rgba(25, 135, 84, 0.1);
+            color: #198754;
+        }
+
+        .status-inactive {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        .chart-container {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            height: 700px; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chart-btn {
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .chart-btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .chart-wrapper {
+            flex: 1; 
+            position: relative;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 600px !important; 
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Modal styles */
+        .chart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 10px;
+            width: 90%;
+            height: 90%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .modal-chart-container {
+            flex: 1;
+            position: relative;
+        }
+
+        #modalChart {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        @media (max-width: 1200px) {
             .chart-container {
-                display: flex;
-                justify-content: space-between;
-                flex-wrap: wrap;
+                height: 600px;
             }
-
+            
             canvas {
-                width: 100%;
-                height: 200px;
-                margin-top: 30px;
-                margin-bottom: 20px;
-                border: 1px solid #ddd;
+                height: 550px !important;
             }
+        }
 
-            @media (max-width: 600px) {
-                .data {
-                    flex-direction: column;
-                }
+        @media (max-width: 992px) {
+            .chart-container {
+                height: 550px;
             }
-        </style>
-    </head>
+            
+            canvas {
+                height: 500px !important;
+            }
+        }
 
-    <body>
-        <div class="container">
-            <h2>Real-Time IoT Dashboard</h2>
-            <div id="alert" class="alert" style="display:none;"></div>
+        @media (max-width: 768px) {
+            .sensor-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+            
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .chart-container {
+                height: 500px;
+            }
+            
+            canvas {
+                height: 450px !important;
+            }
+        }
 
-            <div class="data">
-                <span><strong>Temperature:</strong> <span id="temperature">Loading...</span>°C</span>
-                <span><strong>Humidity:</strong> <span id="humidity">Loading...</span>%</span>
-                <span><strong>Pressure:</strong> <span id="pressure">Loading...</span>hPa</span>
-                <span><strong>CO2:</strong> <span id="co2">Loading...</span>ppm</span>
-                <span><strong>Motion:</strong> <span id="motion">Loading...</span></span>
+        @media (max-width: 576px) {
+            .chart-container {
+                height: 450px;
+            }
+            
+            canvas {
+                height: 400px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sensor-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .chart-container {
+                height: 400px;
+            }
+            
+            canvas {
+                height: 350px !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="chartModal" class="chart-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Chart Title</h3>
+                <button id="closeModal" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-chart-container">
+                <canvas id="modalChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <h1>IoT Dashboard</h1>
+            </div>
+            <div class="last-updated" id="lastUpdated">Last updated: Just now</div>
+        </header>
+
+        <div id="alert" class="alert">
+            <i class="fas fa-exclamation-circle"></i>
+            <div class="alert-message"></div>
+        </div>
+
+        <div class="sensor-grid">
+            <div class="sensor-card">
+                <div class="sensor-header">
+                    <div>
+                        <div class="sensor-title">Temperature</div>
+                        <div class="sensor-value" id="temperature">--</div>
+                        <div class="sensor-unit">°C</div>
+                    </div>
+                    <div class="sensor-icon temp-icon">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                </div>
             </div>
 
+            <div class="sensor-card">
+                <div class="sensor-header">
+                    <div>
+                        <div class="sensor-title">Humidity</div>
+                        <div class="sensor-value" id="humidity">--</div>
+                        <div class="sensor-unit">%</div>
+                    </div>
+                    <div class="sensor-icon humidity-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                </div>
+            </div>
 
-            <div class="chart-container">
-                <canvas id="temperatureChart"></canvas>
-                <canvas id="co2Chart"></canvas>
-                <canvas id="motionChart"></canvas>
+            <div class="sensor-card">
+                <div class="sensor-header">
+                    <div>
+                        <div class="sensor-title">Pressure</div>
+                        <div class="sensor-value" id="pressure">--</div>
+                        <div class="sensor-unit">hPa</div>
+                    </div>
+                    <div class="sensor-icon pressure-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                </div>
+            </div>
 
+            <div class="sensor-card">
+                <div class="sensor-header">
+                    <div>
+                        <div class="sensor-title">CO2 Level</div>
+                        <div class="sensor-value" id="co2">--</div>
+                        <div class="sensor-unit">ppm</div>
+                    </div>
+                    <div class="sensor-icon co2-icon">
+                        <i class="fas fa-smog"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sensor-card">
+                <div class="sensor-header">
+                    <div>
+                        <div class="sensor-title">Motion</div>
+                        <div class="sensor-value" id="motion">--</div>
+                        <div class="sensor-status" id="motionStatus">Not Detected</div>
+                    </div>
+                    <div class="sensor-icon motion-icon">
+                        <i class="fas fa-running"></i>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <script src="/socket.io/socket.io.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">Temperature Trends</div>
+                <div class="chart-actions">
+                    <button class="chart-btn expand-btn" data-chart="temperatureChart"><i class="fas fa-expand"></i></button>
+                </div>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="temperatureChart"></canvas>
+            </div>
+        </div>
 
-        <script>
-            const socket = io();
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">CO2 Levels</div>
+                <div class="chart-actions">
+                    <button class="chart-btn expand-btn" data-chart="co2Chart"><i class="fas fa-expand"></i></button>
+                </div>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="co2Chart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">Motion Detection</div>
+                <div class="chart-actions">
+                    <button class="chart-btn expand-btn" data-chart="motionChart"><i class="fas fa-expand"></i></button>
+                </div>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="motionChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.0.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.2.0"></script>
+
+    <script>
+        // Initialize modal elements first
+        const modal = document.getElementById('chartModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalChartCanvas = document.getElementById('modalChart');
+        const closeModal = document.getElementById('closeModal');
+        let modalChart = null;
+
+        const socket = io();
         
-            const tempCtx = document.getElementById("temperatureChart").getContext("2d");
-            const co2Ctx = document.getElementById("co2Chart").getContext("2d");
-            const motionCtx = document.getElementById("motionChart").getContext("2d");
-        
-            const temperatureData = {
-                labels: [],
-                datasets: [{
-                    label: 'Temperature(°C)',
-                    data: [],
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    fill: false
-                }]
-            };
-        
-            const co2Data = {
-                labels: [],
-                datasets: [{
-                    label: 'CO2(ppm)',
-                    data: [],
-                    borderColor: 'rgba(153, 102, 255, 1)',
-                    fill: false
-                }]
-            };
-        
-            const motionData = {
-                labels: [],
-                datasets: [{
-                    label: 'Motion Detection',
-                    data: [],
-                    borderColor: 'rgba(255, 159, 64, 1)',
-                    fill: false
-                }]
-            };
-        
-            const config = {
-                type: 'line',
-                options: {
-                    scales: {
-                        x: {
-                            type: 'linear',
-                            position: 'bottom'
+        function updateLastUpdated() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = `Last updated: ${now.toLocaleTimeString()}`;
+        }
+
+        // Chart initialization
+        const tempCtx = document.getElementById("temperatureChart").getContext("2d");
+        const co2Ctx = document.getElementById("co2Chart").getContext("2d");
+        const motionCtx = document.getElementById("motionChart").getContext("2d");
+
+        const temperatureData = {
+            datasets: [{
+                label: 'Temperature (°C)',
+                data: [],
+                borderColor: '#dc3545',
+                backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true
+            }]
+        };
+
+        const co2Data = {
+            datasets: [{
+                label: 'CO2 (ppm)',
+                data: [],
+                borderColor: '#6f42c1',
+                backgroundColor: 'rgba(111, 66, 193, 0.1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true
+            }]
+        };
+
+        const motionData = {
+            datasets: [{
+                label: 'Motion Detected',
+                data: [],
+                borderColor: '#fd7e14',
+                backgroundColor: 'rgba(253, 126, 20, 0.1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true
+            }]
+        };
+
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'minute',
+                        displayFormats: {
+                            minute: 'HH:mm'
+                        }
+                    },
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        maxRotation: 45,
+                        padding: 10
+                    }
+                },
+                y: {
+                    beginAtZero: false,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        padding: 10
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            },
+            layout: {
+                padding: {
+                    bottom: 20,
+                    left: 10,
+                    right: 10,
+                    top: 10
+                }
+            }
+        };
+
+        const tempChart = new Chart(tempCtx, {
+            type: 'line',
+            data: temperatureData,
+            options: chartOptions
+        });
+
+        const co2Chart = new Chart(co2Ctx, {
+            type: 'line',
+            data: co2Data,
+            options: chartOptions
+        });
+
+        const motionChart = new Chart(motionCtx, {
+            type: 'line',
+            data: motionData,
+            options: {
+                ...chartOptions,
+                scales: {
+                    ...chartOptions.scales,
+                    y: {
+                        ...chartOptions.scales.y,
+                        min: 0,
+                        max: 1,
+                        ticks: {
+                            callback: function(value) {
+                                return value === 1 ? 'Detected' : 'None';
+                            }
                         }
                     }
                 }
-            };
-        
-            const tempChart = new Chart(tempCtx, {...config, data: temperatureData});
-            console.log(tempChart)
-            const co2Chart = new Chart(co2Ctx, {...config, data: co2Data});
-            console.log(co2Chart)
-            const motionChart = new Chart(motionCtx, {...config, data: motionData});
-            console.log(motionChart)
-        
-            socket.on("sensorData", (data) => {
-                // Update dashboard with the latest sensor data
-                document.getElementById("temperature").textContent = data.temperature;
-                document.getElementById("humidity").textContent = data.humidity;
-                document.getElementById("pressure").textContent = data.pressure;
-                document.getElementById("co2").textContent = data.co2;
-                document.getElementById("motion").textContent = data.motion ? "Detected" : "Not Detected";
-        
-                // Update charts with real-time data
-                temperatureData.labels.push(new Date());
-                temperatureData.datasets[0].data.push(data.temperature);
-                tempChart.update();
-        
-                co2Data.labels.push(new Date());
-                co2Data.datasets[0].data.push(data.co2);
-                co2Chart.update();
-        
-                motionData.labels.push(new Date());
-                motionData.datasets[0].data.push(data.motion);
-                motionChart.update();
-            });
-        
-            socket.on("alert", (message) => {
-                const alertDiv = document.getElementById("alert");
-                alertDiv.style.display = "block";
-                alertDiv.textContent = message;
-        
-                // Hide alert after 5 seconds
-                setTimeout(() => {
-                    alertDiv.style.display = "none";
-                }, 5000);
-            });
-        </script>
-        
-    </body>
+            }
+        });
 
+        // Chart expansion functionality
+        function openChartInModal(chartInstance, title) {
+            modalTitle.textContent = title;
+            modal.style.display = 'flex';
+            
+            const ctx = modalChartCanvas.getContext('2d');
+            
+            if (modalChart) {
+                modalChart.destroy();
+            }
+            
+            modalChart = new Chart(ctx, {
+                type: chartInstance.config.type,
+                data: JSON.parse(JSON.stringify(chartInstance.data)),
+                options: {
+                    ...chartInstance.options,
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    plugins: {
+                        ...chartInstance.options.plugins,
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+
+        function closeModalFunc() {
+            modal.style.display = 'none';
+            if (modalChart) {
+                modalChart.destroy();
+                modalChart = null;
+            }
+        }
+
+        // Event delegation for expand buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.expand-btn')) {
+                const button = e.target.closest('.expand-btn');
+                const chartId = button.getAttribute('data-chart');
+                const chartTitle = button.closest('.chart-header').querySelector('.chart-title').textContent;
+                
+                let chartInstance;
+                if (chartId === 'temperatureChart') {
+                    chartInstance = tempChart;
+                } else if (chartId === 'co2Chart') {
+                    chartInstance = co2Chart;
+                } else if (chartId === 'motionChart') {
+                    chartInstance = motionChart;
+                }
+                
+                openChartInModal(chartInstance, chartTitle);
+            }
+        });
+
+        closeModal.addEventListener('click', closeModalFunc);
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModalFunc();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal.style.display === 'flex') {
+                closeModalFunc();
+            }
+        });
+
+        // Socket.io data handling
+        socket.on("sensorData", (data) => {
+            document.getElementById("temperature").textContent = data.temperature;
+            document.getElementById("humidity").textContent = data.humidity;
+            document.getElementById("pressure").textContent = data.pressure;
+            document.getElementById("co2").textContent = data.co2;
+            
+            const motionElement = document.getElementById("motion");
+            const motionStatus = document.getElementById("motionStatus");
+            
+            if (data.motion) {
+                motionElement.textContent = "Detected";
+                motionStatus.textContent = "Active";
+                motionStatus.className = "sensor-status status-active";
+            } else {
+                motionElement.textContent = "None";
+                motionStatus.textContent = "Inactive";
+                motionStatus.className = "sensor-status status-inactive";
+            }
+
+            const now = new Date();
+            
+            temperatureData.datasets[0].data.push({
+                x: now,
+                y: data.temperature
+            });
+            
+            co2Data.datasets[0].data.push({
+                x: now,
+                y: data.co2
+            });
+            
+            motionData.datasets[0].data.push({
+                x: now,
+                y: data.motion ? 1 : 0
+            });
+
+            if (temperatureData.datasets[0].data.length > 20) {
+                temperatureData.datasets[0].data.shift();
+                co2Data.datasets[0].data.shift();
+                motionData.datasets[0].data.shift();
+            }
+
+            tempChart.update();
+            co2Chart.update();
+            motionChart.update();
+            
+            updateLastUpdated();
+        });
+
+        socket.on("alert", (message) => {
+            const alertDiv = document.getElementById("alert");
+            const alertMessage = document.querySelector(".alert-message");
+            
+            alertDiv.style.display = "flex";
+            alertDiv.className = "alert alert-danger";
+            alertMessage.textContent = message;
+            
+            const icon = alertDiv.querySelector("i");
+            icon.className = message.toLowerCase().includes("warning") ? 
+                "fas fa-exclamation-triangle" : "fas fa-exclamation-circle";
+
+            setTimeout(() => {
+                alertDiv.style.display = "none";
+            }, 5000);
+        });
+    </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --danger: #f72585;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --white: #ffffff;
+            
+            /* Dark mode variables */
+            --bg-dark: #121212;
+            --card-dark: #1e1e1e;
+            --text-dark: #e0e0e0;
+            --border-dark: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode header {
+            border-bottom-color: var(--border-dark);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .last-updated {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        body.dark-mode .last-updated {
+            color: #aaa;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            background-color: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffeeba;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeIn 0.3s ease-in-out;
+            display: none;
+        }
+
+        body.dark-mode .alert {
+            background-color: #332c00;
+            color: #ffecb5;
+            border-left-color: #665800;
+        }
+
+        .alert i {
+            font-size: 20px;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left-color: #f5c6cb;
+        }
+
+        body.dark-mode .alert-danger {
+            background-color: #3a0d14;
+            color: #ffb8c6;
+            border-left-color: #5c1a25;
+        }
+
+        .sensor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .sensor-card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        body.dark-mode .sensor-card {
+            background: var(--card-dark);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .sensor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .sensor-card:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .sensor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .sensor-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .temp-icon {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .humidity-icon {
+            background-color: rgba(13, 110, 253, 0.1);
+            color: #0d6efd;
+        }
+
+        .pressure-icon {
+            background-color: rgba(25, 135, 84, 0.1);
+            color: #198754;
+        }
+
+        .co2-icon {
+            background-color: rgba(111, 66, 193, 0.1);
+            color: #6f42c1;
+        }
+
+        .motion-icon {
+            background-color: rgba(253, 126, 20, 0.1);
+            color: #fd7e14;
+        }
+
+        .sensor-title {
+            font-size: 14px;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        body.dark-mode .sensor-title {
+            color: #aaa;
+        }
+
+        .sensor-value {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 5px 0;
+        }
+
+        body.dark-mode .sensor-value {
+            color: var(--text-dark);
+        }
+
+        .sensor-unit {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        body.dark-mode .sensor-unit {
+            color: #888;
+        }
+
+        .sensor-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: rgba(25, 135, 84, 0.1);
+            color: #198754;
+        }
+
+        body.dark-mode .status-active {
+            background-color: rgba(25, 135, 84, 0.3);
+            color: #4cc987;
+        }
+
+        .status-inactive {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        body.dark-mode .status-inactive {
+            background-color: rgba(108, 117, 125, 0.3);
+            color: #9aa1a9;
+        }
+
+        .chart-container {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            height: 700px; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        body.dark-mode .chart-container {
+            background: var(--card-dark);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        body.dark-mode .chart-title {
+            color: var(--text-dark);
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chart-btn {
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+
+        body.dark-mode .chart-btn {
+            color: #aaa;
+        }
+
+        .chart-btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        body.dark-mode .chart-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .chart-wrapper {
+            flex: 1; 
+            position: relative;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 600px !important; 
+            display: block;
+        }
+
+        /* Dark mode toggle button */
+        .dark-mode-toggle {
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 5px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            color: var(--text-dark);
+        }
+
+        body.dark-mode .dark-mode-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Modal styles */
+        .chart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 10px;
+            width: 90%;
+            height: 90%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body.dark-mode .modal-content {
+            background: var(--card-dark);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        body.dark-mode .modal-close {
+            color: #aaa;
+        }
+
+        .modal-chart-container {
+            flex: 1;
+            position: relative;
+        }
+
+        #modalChart {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        @media (max-width: 1200px) {
+            .chart-container {
+                height: 600px;
+            }
+            
+            canvas {
+                height: 550px !important;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .chart-container {
+                height: 550px;
+            }
+            
+            canvas {
+                height: 500px !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sensor-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+            
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .chart-container {
+                height: 500px;
+            }
+            
+            canvas {
+                height: 450px !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .chart-container {
+                height: 450px;
+            }
+            
+            canvas {
+                height: 400px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sensor-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .chart-container {
+                height: 400px;
+            }
+            
+            canvas {
+                height: 350px !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Modal must be placed BEFORE the script that uses it -->
+    <div id="chartModal" class="chart-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Chart Title</h3>
+                <button id="closeModal" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-chart-container">
+                <canvas id="modalChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <h1>IoT Dashboard</h1>
+            </div>
+            <div class="header-controls">
+                <div class="last-updated" id="lastUpdated">Last updated: Just now</div>
+                <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <div id="alert" class="alert">
+            <i class="fas fa-exclamation-circle"></i>
+            <div class="alert-message"></div>
+        </div>
+
+        <div class="sensor-grid">
+            <div class="sensor-card">
+                <div class="sensor-header">
+                    <div>
+                        <div class="sensor-title">Temperature</div>
+                        <div class="sensor-value" id="temperature">--</div>
+                        <div class="sensor-unit">°C</div>
+                    </div>
+                    <div class="sensor-icon temp-icon">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sensor-card">
+                <div class="sensor-header">
+                    <div>
+                        <div class="sensor-title">Humidity</div>
+                        <div class="sensor-value" id="humidity">--</div>
+                        <div class="sensor-unit">%</div>
+                    </div>
+                    <div class="sensor-icon humidity-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sensor-card">
+                <div class="sensor-header">
+                    <div>
+                        <div class="sensor-title">Pressure</div>
+                        <div class="sensor-value" id="pressure">--</div>
+                        <div class="sensor-unit">hPa</div>
+                    </div>
+                    <div class="sensor-icon pressure-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sensor-card">
+                <div class="sensor-header">
+                    <div>
+                        <div class="sensor-title">CO2 Level</div>
+                        <div class="sensor-value" id="co2">--</div>
+                        <div class="sensor-unit">ppm</div>
+                    </div>
+                    <div class="sensor-icon co2-icon">
+                        <i class="fas fa-smog"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sensor-card">
+                <div class="sensor-header">
+                    <div>
+                        <div class="sensor-title">Motion</div>
+                        <div class="sensor-value" id="motion">--</div>
+                        <div class="sensor-status" id="motionStatus">Not Detected</div>
+                    </div>
+                    <div class="sensor-icon motion-icon">
+                        <i class="fas fa-running"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">Temperature Trends</div>
+                <div class="chart-actions">
+                    <button class="chart-btn expand-btn" data-chart="temperatureChart"><i class="fas fa-expand"></i></button>
+                </div>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="temperatureChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">CO2 Levels</div>
+                <div class="chart-actions">
+                    <button class="chart-btn expand-btn" data-chart="co2Chart"><i class="fas fa-expand"></i></button>
+                </div>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="co2Chart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">Motion Detection</div>
+                <div class="chart-actions">
+                    <button class="chart-btn expand-btn" data-chart="motionChart"><i class="fas fa-expand"></i></button>
+                </div>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="motionChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.0.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.2.0"></script>
+
+    <script>
+        // Initialize modal elements first
+        const modal = document.getElementById('chartModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalChartCanvas = document.getElementById('modalChart');
+        const closeModal = document.getElementById('closeModal');
+        let modalChart = null;
+
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+        
+        // Check for saved user preference or use system preference
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+        let darkMode = localStorage.getItem('darkMode') === 'true' || 
+                      (localStorage.getItem('darkMode') === null && prefersDarkScheme.matches);
+
+        // Apply dark mode on page load
+        if (darkMode) {
+            body.classList.add('dark-mode');
+            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+
+        // Toggle dark mode
+        darkModeToggle.addEventListener('click', () => {
+            darkMode = !darkMode;
+            body.classList.toggle('dark-mode');
+            darkModeToggle.innerHTML = darkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('darkMode', darkMode);
+            
+            // Update charts to match theme
+            updateChartThemes();
+        });
+
+        // System preference change listener
+        prefersDarkScheme.addListener(e => {
+            if (localStorage.getItem('darkMode') === null) {
+                darkMode = e.matches;
+                body.classList.toggle('dark-mode', darkMode);
+                darkModeToggle.innerHTML = darkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+                updateChartThemes();
+            }
+        });
+
+        const socket = io();
+        
+        function updateLastUpdated() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = `Last updated: ${now.toLocaleTimeString()}`;
+        }
+
+        // Chart initialization
+        const tempCtx = document.getElementById("temperatureChart").getContext("2d");
+        const co2Ctx = document.getElementById("co2Chart").getContext("2d");
+        const motionCtx = document.getElementById("motionChart").getContext("2d");
+
+        const temperatureData = {
+            datasets: [{
+                label: 'Temperature (°C)',
+                data: [],
+                borderColor: '#dc3545',
+                backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true
+            }]
+        };
+
+        const co2Data = {
+            datasets: [{
+                label: 'CO2 (ppm)',
+                data: [],
+                borderColor: '#6f42c1',
+                backgroundColor: 'rgba(111, 66, 193, 0.1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true
+            }]
+        };
+
+        const motionData = {
+            datasets: [{
+                label: 'Motion Detected',
+                data: [],
+                borderColor: '#fd7e14',
+                backgroundColor: 'rgba(253, 126, 20, 0.1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true
+            }]
+        };
+
+        function getChartOptions() {
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'minute',
+                            displayFormats: {
+                                minute: 'HH:mm'
+                            }
+                        },
+                        grid: {
+                            display: false,
+                            color: body.classList.contains('dark-mode') ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            padding: 10,
+                            color: body.classList.contains('dark-mode') ? '#aaa' : '#666'
+                        }
+                    },
+                    y: {
+                        beginAtZero: false,
+                        grid: {
+                            color: body.classList.contains('dark-mode') ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            padding: 10,
+                            color: body.classList.contains('dark-mode') ? '#aaa' : '#666'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false,
+                        labels: {
+                            color: body.classList.contains('dark-mode') ? '#e0e0e0' : '#212529'
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: body.classList.contains('dark-mode') ? '#333' : '#fff',
+                        titleColor: body.classList.contains('dark-mode') ? '#fff' : '#212529',
+                        bodyColor: body.classList.contains('dark-mode') ? '#e0e0e0' : '#495057',
+                        borderColor: body.classList.contains('dark-mode') ? '#555' : '#ddd',
+                        borderWidth: 1
+                    }
+                },
+                layout: {
+                    padding: {
+                        bottom: 20,
+                        left: 10,
+                        right: 10,
+                        top: 10
+                    }
+                }
+            };
+        }
+
+        const tempChart = new Chart(tempCtx, {
+            type: 'line',
+            data: temperatureData,
+            options: getChartOptions()
+        });
+
+        const co2Chart = new Chart(co2Ctx, {
+            type: 'line',
+            data: co2Data,
+            options: getChartOptions()
+        });
+
+        const motionChart = new Chart(motionCtx, {
+            type: 'line',
+            data: motionData,
+            options: {
+                ...getChartOptions(),
+                scales: {
+                    ...getChartOptions().scales,
+                    y: {
+                        ...getChartOptions().scales.y,
+                        min: 0,
+                        max: 1,
+                        ticks: {
+                            callback: function(value) {
+                                return value === 1 ? 'Detected' : 'None';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        function updateChartThemes() {
+            const options = getChartOptions();
+            
+            // Update all charts
+            [tempChart, co2Chart, motionChart].forEach(chart => {
+                chart.options = options;
+                chart.update();
+            });
+            
+            // Update modal chart if exists
+            if (modalChart) {
+                modalChart.options = {
+                    ...options,
+                    plugins: {
+                        ...options.plugins,
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: body.classList.contains('dark-mode') ? '#e0e0e0' : '#212529'
+                            }
+                        }
+                    }
+                };
+                modalChart.update();
+            }
+        }
+
+        // Chart expansion functionality
+        function openChartInModal(chartInstance, title) {
+            modalTitle.textContent = title;
+            modal.style.display = 'flex';
+            
+            const ctx = modalChartCanvas.getContext('2d');
+            
+            if (modalChart) {
+                modalChart.destroy();
+            }
+            
+            modalChart = new Chart(ctx, {
+                type: chartInstance.config.type,
+                data: JSON.parse(JSON.stringify(chartInstance.data)),
+                options: {
+                    ...chartInstance.options,
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    plugins: {
+                        ...chartInstance.options.plugins,
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: body.classList.contains('dark-mode') ? '#e0e0e0' : '#212529'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function closeModalFunc() {
+            modal.style.display = 'none';
+            if (modalChart) {
+                modalChart.destroy();
+                modalChart = null;
+            }
+        }
+
+        // Event delegation for expand buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.expand-btn')) {
+                const button = e.target.closest('.expand-btn');
+                const chartId = button.getAttribute('data-chart');
+                const chartTitle = button.closest('.chart-header').querySelector('.chart-title').textContent;
+                
+                let chartInstance;
+                if (chartId === 'temperatureChart') {
+                    chartInstance = tempChart;
+                } else if (chartId === 'co2Chart') {
+                    chartInstance = co2Chart;
+                } else if (chartId === 'motionChart') {
+                    chartInstance = motionChart;
+                }
+                
+                openChartInModal(chartInstance, chartTitle);
+            }
+        });
+
+        closeModal.addEventListener('click', closeModalFunc);
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModalFunc();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal.style.display === 'flex') {
+                closeModalFunc();
+            }
+        });
+
+        // Socket.io data handling
+        socket.on("sensorData", (data) => {
+            document.getElementById("temperature").textContent = data.temperature;
+            document.getElementById("humidity").textContent = data.humidity;
+            document.getElementById("pressure").textContent = data.pressure;
+            document.getElementById("co2").textContent = data.co2;
+            
+            const motionElement = document.getElementById("motion");
+            const motionStatus = document.getElementById("motionStatus");
+            
+            if (data.motion) {
+                motionElement.textContent = "Detected";
+                motionStatus.textContent = "Active";
+                motionStatus.className = "sensor-status status-active";
+            } else {
+                motionElement.textContent = "None";
+                motionStatus.textContent = "Inactive";
+                motionStatus.className = "sensor-status status-inactive";
+            }
+
+            const now = new Date();
+            
+            temperatureData.datasets[0].data.push({
+                x: now,
+                y: data.temperature
+            });
+            
+            co2Data.datasets[0].data.push({
+                x: now,
+                y: data.co2
+            });
+            
+            motionData.datasets[0].data.push({
+                x: now,
+                y: data.motion ? 1 : 0
+            });
+
+            if (temperatureData.datasets[0].data.length > 20) {
+                temperatureData.datasets[0].data.shift();
+                co2Data.datasets[0].data.shift();
+                motionData.datasets[0].data.shift();
+            }
+
+            tempChart.update();
+            co2Chart.update();
+            motionChart.update();
+            
+            updateLastUpdated();
+        });
+
+        socket.on("alert", (message) => {
+            const alertDiv = document.getElementById("alert");
+            const alertMessage = document.querySelector(".alert-message");
+            
+            alertDiv.style.display = "flex";
+            alertDiv.className = "alert alert-danger";
+            alertMessage.textContent = message;
+            
+            const icon = alertDiv.querySelector("i");
+            icon.className = message.toLowerCase().includes("warning") ? 
+                "fas fa-exclamation-triangle" : "fas fa-exclamation-circle";
+
+            setTimeout(() => {
+                alertDiv.style.display = "none";
+            }, 5000);
+        });
+    </script>
+</body>
 </html>
